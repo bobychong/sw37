@@ -1,0 +1,61 @@
+﻿/* - - - - - - - - - 各浏览器样式默认值标准化  - - - - - - - - -*/
+html,body,span,object,iframe,h1,h2,h3,h4,h5,p,blockquote,pre,
+a,address,code,
+del,em,img,dl,dt,dd,ol,ul,li,
+fieldset,form,label{
+margin:0;padding:0;border:0;
+font-style:inherit;font-family:inherit;vertical-align:baseline;}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;display: block;}
+html{-webkit-text-size-adjust:none;}
+img{border:none;vertical-align:middle;}
+input,select,button{padding:0;margin:0;outline:none;font-family:inherit;vertical-align:middle;}
+textarea{font-family:inherit;}
+button{cursor:pointer;}
+html{overflow-x:hidden;}
+body{font-size:12px;background-color:#1f1f1d;OVERFLOW-X: hidden;OVERFLOW-Y: hidden;}
+ul,ol{list-style-type:none;}
+h1{font-size:24px;}
+h2{font-size:18px;}
+h3,h4{font-size:14px;}
+h5{font-size:12px;}
+i,em,address{font-style:normal;}
+a{ text-decoration:none;color:#4f4f4f;}
+a:hover{text-decoration:underline;transition:color 200ms linear 0s,background-color 200ms linear 0s,border-color 200ms linear 0s;}	/*鼠标悬停时*/
+a:active{}	/*点击与释放时*/
+a:visited{}/* 访问过 */
+/*  - - - - - - - - - 常用类样式  - - - - - - - - -*/
+.no_bor{ border:none!important;}	/*无边框*/
+.no_bg{ background:none!important;}	/*无背景*/
+.clear{ display:block;height:0; line-height:0;overflow:hidden; clear:both;font-size:0;}/*清除浮动*/
+.center{}	/*让内容区块居中*/
+#main{
+	width:570px;
+	height:275px;
+	background: url(../images/187zg_bg.png) no-repeat left top;
+	padding-left:27px;
+	padding-right:27px;
+	padding-top:27px;
+}
+/*新闻中心*/
+#News{width:428px;float:left;}
+#News ul{}
+#News ul li{height:24px;line-height:24px;overflow:hidden;}
+#News ul li a{color:#e3cf94;}
+/**/
+#quicklink{float:left;width:88px;}
+#quicklink ul li{margin-bottom:9px;}
+#quicklink ul li a{width:90px;height:24px;display:block;background: url(../images/187zg_an.png) no-repeat left top;text-indent:-99em;overflow:hidden;}
+#quicklink ul li a.btn01{background-position:left top ;}
+#quicklink ul li a.btn01:hover{background-position:right top;}
+#quicklink ul li a.btn02{background-position:0px -32px ;}
+#quicklink ul li a.btn02:hover{background-position:right -32px;}
+#quicklink ul li a.btn03{background-position:0px -64px ;}
+#quicklink ul li a.btn03:hover{background-position:right -64px;}
+#quicklink ul li a.btn04{background-position:0px -96px ;}
+#quicklink ul li a.btn04:hover{background-position:right -96px;}
+#quicklink ul li a.btn05{background-position:0px -128px;}
+#quicklink ul li a.btn05:hover{background-position:right -128px;}
+#quicklink ul li a.btn06{background-position:0px -160px;}
+#quicklink ul li a.btn06:hover{background-position:right -160px;}
+#quicklink ul li a.btn07{background-position:0px -192px;}
+#quicklink ul li a.btn07:hover{background-position:right -192px;}
