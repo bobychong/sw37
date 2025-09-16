@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>客户端下载 - 复古传奇</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+
+    .top-bar {
+      background-color: #1a1a1a;
+      padding: 15px 40px;
+      border-bottom: 1px solid #333;
+    }
+
+    .back-home-btn {
+      display: inline-block;
+      background: linear-gradient(45deg, #ff6600, #ffcc00);
+      color: #000;
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255, 204, 0, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .back-home-btn:hover {
+      background: linear-gradient(45deg, #ffcc00, #ff6600);
+      transform: scale(1.05);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 60px auto 50px;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 15px;
+      border: 2px solid #444;
+      box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      color: #ffcc00;
+      margin-bottom: 20px;
+    }
+
+    .note {
+      font-size: 16px;
+      color: #ccc;
+      text-align: center;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .download-section {
+      margin-top: 30px;
+    }
+
+    .download-button {
+      display: inline-block;
+      margin: 10px 0;
+      padding: 14px 30px;
+      background: linear-gradient(to right, #ff6600, #ffcc00);
+      color: #000;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255, 204, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .download-button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #ffcc00, #ff6600);
+    }
+
+    .download-info {
+      font-size: 15px;
+      margin-top: 8px;
+      color: #ccc;
+      line-height: 1.8;
+      word-break: break-all;
+    }
+
+    code {
+      background-color: #222;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #ffcc00;
+    }
+
+    .copy-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .copy-btn {
+      background-color: #444;
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .copy-btn:hover {
+      background-color: #666;
+    }
+
+    .copy-msg {
+      font-size: 13px;
+      color: #00ff00;
+      display: none;
+    }
+
+    .gallery-title {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 60px;
+      margin-bottom: 30px;
+      color: #ffcc00;
+    }
+
+    .big-preview {
+      display: block;
+      max-width: 90%;
+      height: auto;
+      margin: 20px auto;
+      border-radius: 12px;
+      border: 2px solid #444;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .big-preview:hover {
+      transform: scale(1.03);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin: 50px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a href="/" class="back-home-btn">返回首页</a>
+  </div>
+
+  <div class="container">
+    <h1>登陆器下载 — 需要放在16周年客户端内</h1>
+    <p class="note">如您已有客户端，只需下载此登陆器并放入16周年客户端根目录即可。</p>
+    <div class="download-section">
+      <a class="download-button" href="https://pan.baidu.com/s/1fPNk2eHsCLlo2Nc0VFDbWA?pwd=3j8v" target="_blank" rel="noopener noreferrer">
+        登陆器下载（百度网盘）
+      </a>
+      <div class="download-info">
+        文件名：纯净复古传奇.rar<br />
+        大小：13.9M<br />
+        网盘链接：<br />
+        <div class="copy-wrap">
+          <code id="link1">https://pan.baidu.com/s/1fPNk2eHsCLlo2Nc0VFDbWA?pwd=3j8v</code>
+          <button class="copy-btn" onclick="copyToClipboard('link1')">点击复制</button>
+          <span class="copy-msg" id="msg1">已复制！</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>客户端下载16周年 — 有客户端的直接下载登陆器即可</h1>
+    <p class="note">首次体验建议下载完整版客户端；老玩家可跳过此步骤直接更新登陆器。</p>
+    <div class="download-section">
+      <a class="download-button" href="https://pan.baidu.com/s/1f9irQxBslvUJcJfDpMlXQw?pwd=mtvd" target="_blank" rel="noopener noreferrer">
+        客户端下载（百度网盘）
+      </a>
+      <div class="download-info">
+        文件名：16周年.rar<br />
+        大小：9.22G<br />
+        网盘链接：<br />
+        <div class="copy-wrap">
+          <code id="link2">https://pan.baidu.com/s/1f9irQxBslvUJcJfDpMlXQw?pwd=mtvd</code>
+          <button class="copy-btn" onclick="copyToClipboard('link2')">点击复制</button>
+          <span class="copy-msg" id="msg2">已复制！</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-title">整体文件截图预览</div>
+
+  <img src="/game/176-1/z1.png" alt="游戏截图" class="big-preview" onclick="openLightbox(this.src)">
+
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="预览图">
+  </div>
+
+  <footer>
+    © 2024-2025 176传奇. 版权所有.
+  </footer>
+
+  <script>
+    function copyToClipboard(id) {
+      const linkText = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(linkText).then(() => {
+        const msg = document.getElementById('msg' + id.slice(-1));
+        msg.style.display = 'inline';
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 2000);
+      });
+    }
+
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').sty
