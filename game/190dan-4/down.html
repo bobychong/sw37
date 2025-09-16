@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>客户端下载 - 暴走小财神剧情剧情版</title>
+  <style>
+    /* ===== 全局样式 ===== */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+
+    /* ===== 顶部返回按钮栏 ===== */
+    .top-bar {
+      background-color: #1a1a1a;
+      padding: 15px 40px;
+      border-bottom: 1px solid #333;
+    }
+
+    .back-home-btn {
+      display: inline-block;
+      background: linear-gradient(45deg, #ff6600, #ffcc00);
+      color: #000;
+      padding: 10px 24px;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255, 204, 0, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .back-home-btn:hover {
+      background: linear-gradient(45deg, #ffcc00, #ff6600);
+      transform: scale(1.05);
+    }
+
+    /* ===== 页面主容器 ===== */
+    .container {
+      max-width: 960px;
+      margin: 60px auto 50px;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 15px;
+      border: 2px solid #444;
+      box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
+    }
+
+    /* 标题样式 */
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      color: #ffcc00;
+      margin-bottom: 20px;
+    }
+
+    /* 说明文字样式 */
+    .note {
+      font-size: 16px;
+      color: #ccc;
+      text-align: center;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* 每个下载区域的容器，底部加分割线 */
+    .download-block {
+      margin-bottom: 60px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 40px;
+    }
+
+    /* 下载按钮区域，横向排布，响应式换行 */
+    .download-section {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    /* 下载按钮样式 */
+    .download-button {
+      display: inline-block;
+      padding: 14px 30px 14px 50px;
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(255, 204, 0, 0.5);
+      transition: all 0.3s ease;
+      background-repeat: no-repeat;
+      background-position: 12px center;
+      background-size: 28px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* 按钮悬浮效果 */
+    .download-button:hover {
+      transform: scale(1.05);
+      background-color: #ffe066;
+    }
+
+    /* 下载信息显示区域 */
+    .download-info {
+      font-size: 15px;
+      margin-top: 10px;
+      color: #ccc;
+      line-height: 1.8;
+      word-break: break-word;
+      /* 过渡动画，显示隐藏更平滑 */
+      transition: all 0.3s ease;
+    }
+
+    /* 代码样式 */
+    code {
+      background-color: #222;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #ffcc00;
+      user-select: all;
+    }
+
+    /* 复制区域排版 */
+    .copy-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    /* 复制按钮 */
+    .copy-btn {
+      background-color: #444;
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    /* 复制按钮悬浮 */
+    .copy-btn:hover {
+      background-color: #666;
+    }
+
+    /* 复制成功提示 */
+    .copy-msg {
+      font-size: 13px;
+      color: #00ff00;
+      display: none;
+      user-select: none;
+    }
+
+    /* 游戏截图标题 */
+    .gallery-title {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 60px;
+      margin-bottom: 30px;
+      color: #ffcc00;
+    }
+
+    /* 大图预览缩略图 */
+    .big-preview {
+      display: block;
+      max-width: 90%;
+      height: auto;
+      margin: 20px auto;
+      border-radius: 12px;
+      border: 2px solid #444;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    /* 缩略图悬浮放大 */
+    .big-preview:hover {
+      transform: scale(1.03);
+    }
+
+    /* 弹窗遮罩层 */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* 弹窗中的大图 */
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+
+    /* 页脚 */
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin: 50px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部返回首页按钮 -->
+  <div class="top-bar">
+    <a href="/" class="back-home-btn">返回首页</a>
+    <a href="/" class="back-home-btn">联系客服</a>
+  </div>
+
+  <!-- 主内容容器 -->
+  <div class="container">
+
+    <!-- 登录器下载区域 -->
+    <div class="download-block">
+      <h1>登录器下载</h1>
+      <p class="note">如您已有客户端16周年客户端，只需下载此登陆器并放入16周年客户端根目录即可。如果不会联系客服</p>
+      <div class="download-section">
+        <!-- 每个按钮绑定不同id，背景图标对应平台 -->
+    <div class="download-button" style="background-image: url('/image/baidu.jpg');" onclick="toggleInfo('login-baidu')">百度网盘</div>
+   <!--<div class="download-button" style="background-image: url('/image/ali.jpg');" onclick="toggleInfo('login-aliyun')">阿里云盘</div>
+    <div class="download-button" style="background-image: url('/image/lanzou.png');" onclick="toggleInfo('login-lanzou')">蓝奏云</div>
+    -->
+      </div>
+
+      <!-- 百度网盘信息 -->
+      <div id="info-login-baidu" class="download-info" style="display: none;">
+        <strong>文件名：</strong>暴走小财神剧情剧情版.rar<br />
+        <strong>大小：</strong>13.9MB<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-login-baidu">https://pan.baidu.com/s/1JXh7DFjVTJ9ro6Kqy32R_w?pwd=r9t3</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-login-baidu')">点击复制</button>
+          <span class="copy-msg" id="msg-link-login-baidu">已复制！</span>
+        </div>
+      </div>
+
+      <!-- 阿里云盘信息 -->
+      <div id="info-login-aliyun" class="download-info" style="display: none;">
+        <strong>文件名：</strong>登录器_aliyun.rar<br />
+        <strong>大小：</strong>14.2MB<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-login-aliyun">https://www.aliyundrive.com/s/example-login</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-login-aliyun')">点击复制</button>
+          <span class="copy-msg" id="msg-link-login-aliyun">已复制！</span>
+        </div>
+      </div>
+
+      <!-- 蓝奏云信息 -->
+      <div id="info-login-lanzou" class="download-info" style="display: none;">
+        <strong>文件名：</strong>登录器_lanzou.rar<br />
+        <strong>大小：</strong>13.7MB<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-login-lanzou">https://lanzou.com/login-example</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-login-lanzou')">点击复制</button>
+          <span class="copy-msg" id="msg-link-login-lanzou">已复制！</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 客户端完整版下载区域 -->
+    <div class="download-block">
+      <h1>176纯净复古传奇整体客户端</h1>
+      <p class="note">这个整体客户端已经把补丁和登陆器加好了，下载直接就能玩。如果不会联系客服</p>
+      <div class="download-section">
+        <div class="download-button" style="background-image: url('/image/baidu.jpg');" onclick="toggleInfo('client-baidu')">百度网盘</div>
+       <!-- <div class="download-button" style="background-image: url('/image/ali.jpg');" onclick="toggleInfo('client-aliyun')">阿里云盘</div>
+        <div class="download-button" style="background-image: url('/image/lanzou.png');" onclick="toggleInfo('client-lanzou')">蓝奏云</div>
+        -->
+      </div>
+
+      <!-- 百度网盘信息 -->
+      <div id="info-client-baidu" class="download-info" style="display: none;">
+        <strong>文件名：</strong>暴走小财神剧情剧情版解压就能玩<br />
+        <strong>大小：</strong>8.88G<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-client-baidu">https://pan.baidu.com/s/14gfKC5erZEfclyzSyn6sbQ?pwd=62q7</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-client-baidu')">点击复制</button>
+          <span class="copy-msg" id="msg-link-client-baidu">已复制！</span>
+        </div>
+      </div>
+
+      <!-- 阿里云盘信息 -->
+      <div id="info-client-aliyun" class="download-info" style="display: none;">
+        <strong>文件名：</strong>客户端_aliyun.rar<br />
+        <strong>大小：</strong>9.22G<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-client-aliyun">https://www.aliyundrive.com/s/example</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-client-aliyun')">点击复制</button>
+          <span class="copy-msg" id="msg-link-client-aliyun">已复制！</span>
+        </div>
+      </div>
+
+      <!-- 蓝奏云信息 -->
+      <div id="info-client-lanzou" class="download-info" style="display: none;">
+        <strong>文件名：</strong>客户端_lanzou.rar<br />
+        <strong>大小：</strong>9.22G<br />
+        <strong>下载链接：</strong>
+        <div class="copy-wrap">
+          <code id="link-client-lanzou">https://lanzou.com/abcde</code>
+          <button class="copy-btn" onclick="copyToClipboard('link-client-lanzou')">点击复制</button>
+          <span class="copy-msg" id="msg-link-client-lanzou">已复制！</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 游戏截图展示区域 -->
+    <div class="gallery-title">整体文件截图预览</div>
+    <img src="/game/176-1/z1.png" alt="游戏截图" class="big-preview" onclick="openLightbox(this.src)">
+
+  </div> <!-- end container -->
+
+  <!-- 大图预览弹窗 -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="预览图">
+  </div>
+
+  <!-- 页脚 -->
+  <footer>
+    © 2024-2025 暴走小财神剧情剧情版. 版权所有.
+  </footer>
+
+  <script>
+    /**
+     * 切换下载信息显示区域
+     * 传入按钮对应的 id（例如 'login-baidu'），
+     * 展开对应的下载信息，再次点击隐藏，
+     * 并自动关闭其他所有显示信息。
+     */
+    function toggleInfo(id) {
+      const allInfos = document.querySelectorAll('.download-info');
+      allInfos.forEach(info => {
+        if (info.id === 'info-' + id) {
+          // 如果当前块是要显示的，则切换显示状态
+          info.style.display = (info.style.display === 'block') ? 'none' : 'block';
+        } else {
+          // 其他块隐藏
+          info.style.display = 'none';
+        }
+      });
+    }
+
+    /**
+     * 复制指定元素内文本到剪贴板
+     * 并短暂显示“已复制”提示
+     * @param {string} id - 需要复制内容的code元素ID
+     */
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const msg = document.getElementById('msg-' + id);
+        msg.style.display = 'inline';
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 2000);
+      });
+    }
+
+    /**
+     * 打开大图预览弹窗，显示对应图片
+     * @param {string} src - 图片链接
+     */
+    function openLightbox(src) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      lightboxImg.src = src;
+      lightbox.style.display = 'flex';
+    }
+
+    /**
+     * 关闭大图预览弹窗
+     */
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      lightbox.style.display = 'none';
+      // 清空图片地址避免内存占用
+      document.getElementById('lightbox-img').src = '';
+    }
+  </script>
+</body>
+</html>
