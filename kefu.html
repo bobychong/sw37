@@ -1,297 +1,69 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>联系客服 - 复古传奇</title>
-  <style>
-    /* ===== 全局样式 ===== */
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #111;
-      color: #fff;
-      font-family: 'Microsoft YaHei', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 顶部返回按钮栏 */
-    .top-bar {
-      background-color: #1a1a1a;
-      padding: 15px 40px;
-      padding-left: 40px;
-      border-bottom: 1px solid #333;
-
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .back-home-btn {
-      background: linear-gradient(45deg, #ff6600, #ffcc00);
-      color: #000;
-      padding: 10px 24px;
-      border-radius: 10px;
-      font-weight: bold;
-      text-decoration: none;
-      box-shadow: 0 4px 10px rgba(255, 204, 0, 0.6);
-      transition: all 0.3s ease;
-      user-select: none;
-      cursor: pointer;
-    }
-
-    .back-home-btn:hover {
-      background: linear-gradient(45deg, #ffcc00, #ff6600);
-      transform: scale(1.05);
-    }
-
-    /* 页面主容器 */
-    .container {
-      max-width: 960px;
-      margin: 60px auto 50px;
-      padding: 40px;
-      background: rgba(0, 0, 0, 0.85);
-      border-radius: 15px;
-      border: 2px solid #444;
-      box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-    }
-
-    /* 标题 */
-    h1 {
-      font-size: 28px;
-      text-align: center;
-      color: #ffcc00;
-      margin-bottom: 20px;
-    }
-
-    /* 联系方式列表 */
-    .contact-list {
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-
-    /* 单个联系方式块 */
-    .contact-item {
-      background: #222;
-      padding: 25px 30px;
-      border-radius: 12px;
-      border: 1px solid #555;
-      box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    /* 图标统一大小 */
-    .contact-icon {
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
-    }
-
-    /* 文本信息 */
-    .contact-info {
-      font-size: 18px;
-      color: #ffcc00;
-      user-select: text;
-    }
-
-    /* 链接样式 */
-    .contact-link {
-      color: #ffcc00;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-    .contact-link:hover {
-      color: #ffe066;
-    }
-
-    /* 复制按钮 */
-    .copy-btn {
-      background-color: #444;
-      border: none;
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      user-select: none;
-      transition: background-color 0.3s ease;
-      margin-left: 15px;
-    }
-
-    .copy-btn:hover {
-      background-color: #666;
-    }
-
-    /* 复制提示 */
-    .copy-msg {
-      font-size: 14px;
-      color: #00ff00;
-      margin-left: 10px;
-      display: none;
-      user-select: none;
-    }
-
-    /* 微信二维码容器 */
-    .wechat-qrcode-container {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      cursor: pointer;
-    }
-
-    .wechat-qrcode {
-      width: 120px;
-      height: 120px;
-      border-radius: 12px;
-      border: 2px solid #444;
-      box-shadow: 0 0 15px rgba(255, 204, 0, 0.6);
-      transition: transform 0.3s ease;
-    }
-
-    .wechat-qrcode:hover {
-      transform: scale(1.05);
-    }
-
-    /* 弹窗遮罩层 */
-    .lightbox {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    /* 弹窗中的二维码大图 */
-    .lightbox img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 12px;
-      box-shadow: 0 0 25px rgba(255, 204, 0, 0.9);
-    }
-
-    /* 页脚 */
-    footer {
-      text-align: center;
-      font-size: 14px;
-      color: #666;
-      margin: 30px 0 15px;
-    }
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="爽玩网客服, 传奇私服客服, 游戏问题咨询">
+    <meta name="description" content="爽玩网客服中心：提供游戏下载、账号问题、赞助咨询等服务，快速解决您的问题。">
+    <title>联系客服 - 爽玩网</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 头部导航 -->
+    <div id="header"></div>
 
-  <!-- 顶部返回首页按钮 -->
-  <div class="top-bar">
-    <a href="/" class="back-home-btn">返回首页</a>
-
-  </div>
-
-  <!-- 页面主容器 -->
-  <div class="container">
-    <h1>联系客服</h1>
-
-    <div class="contact-list">
-
-      <!-- QQ 联系方式 -->
-      <div class="contact-item">
-        <img class="contact-icon" src="https://img.icons8.com/color/48/000000/qq.png" alt="QQ 图标" />
-        <div class="contact-info">
-          QQ 联系方式: 
-          <a href="tencent://message/?uin=901375&Site=&Menu=yes" class="contact-link" target="_blank" rel="noopener noreferrer">901375</a>
+    <!-- 客服页面容器：带红色渐变边框 -->
+    <div style="padding-top: 20px;"></div>
+    <div class="kefu-container">
+        <h1 class="kefu-title">联系客服</h1>
+        
+        <div class="red-gradient-border">
+            <div class="border-inner">
+                <div class="kefu-methods">
+                    <!-- QQ客服 -->
+                    <div class="kefu-item">
+                        <div class="kefu-icon"><img class="contact-icon" src="https://img.icons8.com/color/48/000000/qq.png" alt="QQ 图标" /></div>
+                        <h3>QQ客服</h3>
+                        <div class="contact-info">
+                            <p>客服QQ1：901375</p>
+                            <p>QQ群方式：199255435</p>
+                        </div>
+                        <p class="kefu-desc">工作时间：9:00-22:00（节假日不休）</p>
+                    </div>
+                    
+                    <!-- 微信客服 -->
+                    <div class="kefu-item">
+                        <div class="kefu-icon"><img class="contact-icon" src="https://img.icons8.com/color/48/000000/qq.png" alt="QQ 图标" /></div>
+                        <h3>微信客服</h3>
+                        <div class="contact-info">
+                            <p>微信：901375</p>
+                            <p>扫码添加：</p>
+                            <img src="/images/hero/wechat.png" alt="微信客服二维码" style="width: 120px; margin-top: 10px;">
+                        </div>
+                        <p class="kefu-desc">添加时请备注：游戏咨询</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #fff;">常见问题</h3>
+                    <div style="line-height: 1.8;">
+                        <p><strong>Q：游戏无法下载怎么办？</strong><br>
+                        A：请尝试更换浏览器或下载工具，如仍有问题联系客服获取备用链接。</p>
+                        
+                        <p><strong>Q：赞助后多久生效？</strong><br>
+                        A：支付成功后联系客服发送订单号，5分钟内即可开通。</p>
+                        
+                        <p><strong>Q：游戏卡顿/掉线如何解决？</strong><br>
+                        A：建议关闭其他后台程序，或尝试更换服务器线路。</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
- <!-- QQ 群方式 -->
-      <div class="contact-item">
-        <img class="contact-icon" src="https://img.icons8.com/color/48/000000/qq.png" alt="QQ 图标" />
-        <div class="contact-info">
-          QQ 群 : 
-          <a href="tencent://message/?uin=199255435&Site=&Menu=yes" class="contact-link" target="_blank" rel="noopener noreferrer">199255435</a>
-        </div>
-      </div>
-      
-      <!-- 微信联系方式 -->
-      <div class="contact-item wechat-qrcode-container" onclick="openLightbox('/image/wechat.png')" title="点击查看大图">
-        <img class="contact-icon wechat-qrcode" src="image/wechat.png" alt="微信二维码" />
-        <div class="contact-info">微信扫码添加客服：</div>
-      </div>
-
-      <!-- 邮箱联系方式 -->
-      <div class="contact-item" style="flex-wrap: nowrap;">
-        <img class="contact-icon" src="https://img.icons8.com/color/48/000000/new-post.png" alt="邮箱图标" />
-        <div class="contact-info" id="email-address">901375@qq.com</div>
-        <button class="copy-btn" onclick="copyToClipboard('email-address')">复制邮箱</button>
-        <span class="copy-msg" id="msg-email-address">已复制！</span>
-      </div>
-
     </div>
-  </div>
 
-  <!-- 大图预览弹窗 -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" src="" alt="预览二维码">
-  </div>
+    <!-- 页脚 -->
+    <div id="footer"></div>
 
-  <!-- 页脚 -->
-  <footer>
-    © 2024-2025 176传奇. 版权所有.
-  </footer>
-
-  <script>
-    /**
-     * 复制指定元素内文本到剪贴板
-     * 并短暂显示“已复制”提示
-     * @param {string} id - 需要复制内容的元素ID
-     */
-    function copyToClipboard(id) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const text = el.innerText || el.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        const msg = document.getElementById('msg-' + id);
-        if (msg) {
-          msg.style.display = 'inline';
-          setTimeout(() => {
-            msg.style.display = 'none';
-          }, 2000);
-        }
-      });
-    }
-
-    /**
-     * 打开大图预览弹窗，显示对应图片
-     * @param {string} src - 图片链接
-     */
-    function openLightbox(src) {
-      const lightbox = document.getElementById('lightbox');
-      const lightboxImg = document.getElementById('lightbox-img');
-      lightboxImg.src = src;
-      lightbox.style.display = 'flex';
-    }
-
-    /**
-     * 关闭大图预览弹窗
-     */
-    function closeLightbox() {
-      const lightbox = document.getElementById('lightbox');
-      lightbox.style.display = 'none';
-      document.getElementById('lightbox-img').src = '';
-    }
-  </script>
+    <script src="js/load.js"></script>
 </body>
 </html>
