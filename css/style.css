@@ -1,0 +1,503 @@
+/* 基础样式重置 - 保留原有风格 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft YaHei", sans-serif; /* 全局默认字体，特定元素单独改 */
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+img {
+    border: none;
+    max-width: 100%;
+}
+
+/* 全局背景设置 - 纯黑色 */
+body {
+    background-color: #000; /* 纯黑色背景 */
+    color: #fff; /* 文字默认白色 */
+    padding-top: 70px; /* 给固定头部留空间 */
+}
+
+
+/* 渐变动画 */
+@keyframes gradientMove {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+/* 边框内的背景 */
+.border-inner {
+    background: #111; /* 深灰黑色 */
+    color: #fff; /* 文字白色 */
+    padding: 20px;
+    border-radius: 6px; /* 内部容器圆角 */
+    height: 100%; /* 占满父容器 */
+}
+
+/* 头部导航样式 - 完整匹配爽玩网效果 */
+.header {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 999;
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.nav-logo {
+    height: 60px;
+    filter: drop-shadow(0 0 8px #ff4800); /* 橙色LOGO阴影 */
+}
+.nav-items {
+    display: flex;
+    gap: 25px;
+}
+.nav-item a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    padding: 5px 0;
+    text-shadow: 0 0 5px rgba(255,255,255,0.3);
+    font-family: 'Orbitron', sans-serif; /* 导航专属字体 */
+}
+.nav-item a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ffd700; /* 金色下划线 */
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.nav-item a:hover {
+    color: #ffd700; /* hover变金色 */
+    text-shadow: 0 0 10px rgba(255,215,0,0.6);
+}
+.nav-item a:hover::after {
+    width: 100%; /* 下划线展开 */
+}
+
+/* 主视觉区样式 */
+.hero-section {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto 40px;
+    padding: 0;
+}
+.hero-container {
+    position: relative;
+    width: 100%;
+}
+.hero-image {
+    width: 100%;
+    height: 800px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block; /* 消除图片下方空隙 */
+}
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 800px;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 0 20px;
+    border-radius: 8px;
+}
+.hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 15px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.hero-subtitle {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    max-width: 1000px;
+}
+
+/* 分类导航区样式 - 核心改进：游戏分类标题效果（含字体+颜色+渐变线） */
+.categories-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+/* 游戏分类标题容器：定位渐变线 */
+.section-title {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative; /* 关键：为渐变线做定位 */
+}
+/* 游戏分类文字：金色+专属字体+背景遮罩 */
+.section-title h2 {
+    font-size: 2.8rem; /* 标题字号，匹配爽玩网风格 */
+    color: #ffd700; /* 文字金色，和导航hover色统一 */
+    text-transform: uppercase; /* 文字大写，增强风格感 */
+    letter-spacing: 3px; /* 字间距，提升精致度 */
+    display: inline-block; /* 让背景只包裹文字 */
+    padding: 0 20px; /* 文字左右留空，避免和渐变线重叠 */
+    background: #000; /* 背景黑色，遮罩下方渐变线 */
+    position: relative;
+    z-index: 2; /* 确保文字在渐变线上方 */
+    font-family: 'Orbitron', sans-serif; /* 标题专属字体，和导航一致 */
+}
+/* 游戏分类渐变分隔线：透明→金色→透明 */
+.section-title::before {
+    content: ''; /* 生成渐变线载体 */
+    position: absolute;
+    top: 50%; /* 垂直居中，和文字中线对齐 */
+    left: 0;
+    right: 0; /* 左右拉满，实现全屏线效果 */
+    height: 2px; /* 线的粗细 */
+    background: linear-gradient(90deg, transparent, #ffd700, transparent); /* 渐变效果 */
+    z-index: 1; /* 确保线在文字下方 */
+}
+/* 分类卡片网格布局（保留原有自适应逻辑） */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px; /* 卡片间距 */
+}
+.category-card {
+    text-align: center;
+    transition: transform 0.3s;
+}
+.category-card:hover {
+    transform: translateY(-5px);
+}
+.category-logo {
+    height: 100px;
+    margin-bottom: 15px;
+}
+.category-title {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+.category-desc {
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+/* 网站介绍区域 */
+.intro-section {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.intro-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+.highlight-text {
+    color: #ff3300; /* 红色高亮 */
+    font-weight: bold;
+}
+.primary-highlight {
+    color: #ff6600; /* 橙色高亮 */
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* 武器图片容器 */
+.intro-content {
+    position: relative;
+    padding: 20px;
+    padding-right: 140px;
+}
+
+/* 武器图片样式 */
+.weapon-img {
+    width: 120px;
+    height: 160px;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+    opacity: 0.9;
+}
+
+/* 游戏列表区 */
+.games-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+.game-card {
+    display: block;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    position: relative;
+    transition: transform 0.3s;
+}
+.game-card:hover {
+    transform: translateY(-5px);
+}
+.game-image {
+    width: 100%;
+    height: 360px;
+    object-fit: fill;
+}
+.action-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 360px;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.game-card:hover .action-overlay {
+    opacity: 1;
+}
+.enter-indicator {
+    background: #ff6600; /* 按钮橙色 */
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+.info-panel {
+    padding: 15px;
+    background: #111;
+}
+.info-panel h3 {
+    color: #fff;
+    margin-bottom: 8px;
+}
+.info-panel p {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* 底部样式 */
+.footer {
+    background: #000;
+    color: #ccc;
+    padding: 30px 0;
+    margin-top: 50px;
+    border-top: 1px solid #333;
+}
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+.footer-disclaimer {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+.footer-logo {
+    height: 60px;
+    margin-bottom: 20px;
+}
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px 30px;
+    margin-bottom: 20px;
+}
+.footer-links a {
+    color: #ccc;
+    transition: color 0.3s;
+}
+.footer-links a:hover {
+    color: #fff;
+}
+.footer-copyright {
+    font-size: 0.9rem;
+    color: #999;
+}
+
+/* 游戏详情页样式 */
+.game-detail-container {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+.back-link:hover {
+    color: #ff6600; /* 橙色hover */
+}
+.detail-header .border-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+.detail-banner {
+    flex: 1;
+    min-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.detail-banner img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+.detail-info {
+    flex: 1;
+    min-width: 300px;
+}
+.detail-title {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 15px;
+}
+.detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 30px;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.meta-icon {
+    color: #ff6600; /* 橙色图标 */
+}
+.download-section .border-inner {
+    background: #1a1a1a;
+}
+.download-title {
+    font-size: 1.3rem;
+    color: #ff6600; /* 橙色标题 */
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.download-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.download-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #ff6600; /* 橙色按钮 */
+    color: #fff;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+.download-btn:hover {
+    background: #cc5200; /* 深色橙色hover */
+}
+.screenshot-section .border-inner {
+    padding: 20px;
+}
+.screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+.screenshot-item {
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+.screenshot-item:hover {
+    transform: scale(1.02);
+}
+.screenshot-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+.detail-content .border-inner {
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+.content-section {
+    margin-bottom: 30px;
+}
+.content-title {
+    font-size: 1.5rem;
+    color: #fff;
+    margin: 20px 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #333;
+}
+.feature-list {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+.feature-list li {
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+/* 客服页面样式 */
+.kefu-container {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+}
+.kefu-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #fff;
+}
+.kefu-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+.kefu-item {
+    text-align: center;
+}
+.kefu-icon {
+    font-size: 3rem;
+    color: #ff6600; /* 橙色图标 */
+    margin-bottom: 15px;
+}
+.kefu-item h3 {
+    margin-bottom: 15px;
