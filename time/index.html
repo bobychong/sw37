@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIME - 全球时间与精准计时</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --accent: #2563eb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            transition: all 0.2s;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 10px 16px;
+            border-radius: 12px;
+        }
+        .nav-item.active {
+            opacity: 1;
+            color: var(--accent);
+            background: #eff6ff;
+        }
+
+        .time-display {
+            font-size: clamp(3.5rem, 12vw, 8.5rem);
+            font-weight: 800;
+            letter-spacing: -4px;
+            color: #1e293b;
+        }
+
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .calendar-panel {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease-out; }
+
+        .continent-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0 12px 0;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen pb-28">
+
+    <!-- Header & Calendar -->
+    <header class="p-6 max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between items-start gap-4">
+        <div class="text-3xl font-black tracking-tighter italic">TIME<span class="text-blue-600">.SW37.COM</span></div>
+        
+        <!-- 万年历组件 -->
+        <div class="calendar-panel flex items-center gap-6 w-full md:w-auto">
+            <div class="text-left md:text-right border-r pr-6 border-slate-100">
+                <div id="cal-solar" class="text-lg font-bold text-slate-800 leading-tight">2026年1月10日</div>
+                <div class="flex gap-2 text-sm text-blue-600 font-semibold mt-1">
+                    <span id="cal-lunar">农历冬月廿一</span>
+                    <span id="cal-zodiac">乙巳蛇年</span>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-2">
+                    <span class="bg-emerald-100 text-emerald-700 text-[10px] px-1.5 py-0.5 rounded font-bold">宜</span>
+                    <span id="cal-yi" class="text-xs text-slate-600">祭祀 解除 沐浴</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-rose-100 text-rose-700 text-[10px] px-1.5 py-0.5 rounded font-bold">忌</span>
+                    <span id="cal-ji" class="text-xs text-slate-600">嫁娶 安葬 出行</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-7xl mx-auto px-6">
+        
+        <!-- 首页 -->
+        <section id="home" class="page active">
+            <div class="text-center py-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold mb-4">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    CHINA STANDARD TIME (UTC+8)
+                </div>
+                <div id="main-clock" class="time-display mono leading-none mb-2">00:00:00</div>
+                <div class="text-slate-400 font-medium italic">精准同步至国家授时中心服务器</div>
+            </div>
+
+            <!-- 广告位 -->
+            <div class="max-w-5xl mx-auto mb-12">
+               
+            </div>
+
+            <div id="world-clock-sections" class="mb-20">
+                <!-- 由JS填充 -->
+            </div>
+        </section>
+
+        <!-- 计时器页面 -->
+        <section id="timer" class="page max-w-2xl mx-auto text-center py-12">
+            <h2 class="text-3xl font-bold mb-8 italic">计时器 <span class="text-gray-300 font-light not-italic">Timer</span></h2>
+            <div class="glass-card p-10 mb-8">
+                <div id="timer-display" class="text-7xl font-bold mono mb-8 text-blue-600">05:00</div>
+                <div id="timer-setup" class="space-y-6">
+                    <div class="flex justify-center gap-4">
+                        <div class="flex flex-col text-left">
+                            <label class="text-xs text-gray-400 mb-1 font-bold">分钟 MIN</label>
+                            <input type="number" id="timer-min" min="0" max="99" value="5" class="w-24 text-center text-2xl font-bold border rounded-xl p-3 focus:ring-2 ring-blue-500 outline-none">
+                        </div>
+                        <div class="flex flex-col text-left">
+                            <label class="text-xs text-gray-400 mb-1 font-bold">秒钟 SEC</label>
+                            <input type="number" id="timer-sec" min="0" max="59" value="0" class="w-24 text-center text-2xl font-bold border rounded-xl p-3 focus:ring-2 ring-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button onclick="quickSetTimer(1)" class="px-4 py-1.5 text-xs font-bold bg-slate-100 hover:bg-blue-600 hover:text-white rounded-full transition">1m</button>
+                        <button onclick="quickSetTimer(5)" class="px-4 py-1.5 text-xs font-bold bg-slate-100 hover:bg-blue-600 hover:text-white rounded-full transition">5m</button>
+                        <button onclick="quickSetTimer(10)" class="px-4 py-1.5 text-xs font-bold bg-slate-100 hover:bg-blue-600 hover:text-white rounded-full transition">10m</button>
+                        <button onclick="quickSetTimer(30)" class="px-4 py-1.5 text-xs font-bold bg-slate-100 hover:bg-blue-600 hover:text-white rounded-full transition">30m</button>
+                    </div>
+                </div>
+                <div class="flex gap-4 justify-center mt-10">
+                    <button id="timer-control" onclick="toggleTimer()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100">开始计时</button>
+                    <button onclick="resetTimer()" class="bg-slate-100 text-slate-600 px-10 py-3 rounded-xl font-bold hover:bg-slate-200 transition">重置</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 秒表页面 -->
+        <section id="stopwatch" class="page max-w-2xl mx-auto text-center py-12">
+            <h2 class="text-3xl font-bold mb-8 italic">秒表 <span class="text-gray-300 font-light not-italic">Stopwatch</span></h2>
+            <div class="glass-card p-10 mb-8">
+                <div id="sw-display" class="text-7xl font-bold mono mb-12 text-slate-800">00:00.00</div>
+                <div class="flex gap-4 justify-center">
+                    <button id="sw-btn-main" onclick="toggleStopwatch()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg shadow-blue-100">开始</button>
+                    <button onclick="lapStopwatch()" class="bg-slate-100 text-slate-600 px-10 py-3 rounded-xl font-bold">计次</button>
+                    <button onclick="resetStopwatch()" class="bg-slate-100 text-slate-600 px-10 py-3 rounded-xl font-bold">清空</button>
+                </div>
+            </div>
+            <div id="sw-laps" class="space-y-2 max-h-60 overflow-y-auto pr-2 no-scrollbar"></div>
+        </section>
+
+        <!-- 闹钟页面 -->
+        <section id="alarm" class="page max-w-2xl mx-auto py-12">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold italic">闹钟 <span class="text-gray-300 font-light not-italic">Alarm</span></h2>
+                <button onclick="addAlarm()" class="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-100">+ 新建闹钟</button>
+            </div>
+            <div id="alarm-list" class="space-y-4">
+                <div class="glass-card p-6 flex justify-between items-center opacity-50">
+                    <div class="text-slate-400 italic">暂无闹钟数据...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50">
+        <div class="max-w-xl mx-auto flex justify-around p-4">
+            <div class="nav-item active flex flex-col items-center" onclick="showPage('home')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="text-[11px] mt-1 font-bold">首页</span>
+            </div>
+            <div class="nav-item flex flex-col items-center" onclick="showPage('timer')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-[11px] mt-1 font-bold">计时器</span>
+            </div>
+            <div class="nav-item flex flex-col items-center" onclick="showPage('stopwatch')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span class="text-[11px] mt-1 font-bold">秒表</span>
+            </div>
+            <div class="nav-item flex flex-col items-center" onclick="showPage('alarm')">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                <span class="text-[11px] mt-1 font-bold">闹钟</span>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // 城市数据
+        const continentData = [
+            {
+                name: "美洲 Americas",
+                cities: [
+                    { cn: "温哥华", en: "Vancouver", offset: -8 },
+                    { cn: "多伦多", en: "Toronto", offset: -5 },
+                    { cn: "洛杉矶", en: "Los Angeles", offset: -8 },
+                    { cn: "凤凰城", en: "Phoenix", offset: -7 },
+                    { cn: "丹佛", en: "Denver", offset: -7 },
+                    { cn: "芝加哥", en: "Chicago", offset: -6 },
+                    { cn: "纽约", en: "New York", offset: -5 },
+                    { cn: "墨西哥城", en: "Mexico City", offset: -6 },
+                    { cn: "波哥大", en: "Bogotá", offset: -5 },
+                    { cn: "利马", en: "Lima", offset: -5 },
+                    { cn: "圣保罗", en: "São Paulo", offset: -3 },
+                    { cn: "布宜诺斯艾利斯", en: "B.Aires", offset: -3 },
+                    { cn: "圣地亚哥", en: "Santiago", offset: -3 }
+                ]
+            },
+            {
+                name: "太平洋 & 大洋洲 Pacific",
+                cities: [
+                    { cn: "檀香山", en: "Honolulu", offset: -10 },
+                    { cn: "悉尼", en: "Sydney", offset: 11 },
+                    { cn: "奥克兰", en: "Auckland", offset: 13 }
+                ]
+            },
+            {
+                name: "西欧 & 中欧 Europe",
+                cities: [
+                    { cn: "伦敦", en: "London", offset: 0 },
+                    { cn: "都柏林", en: "Dublin", offset: 0 },
+                    { cn: "里斯本", en: "Lisbon", offset: 0 },
+                    { cn: "奥斯陆", en: "Oslo", offset: 1 },
+                    { cn: "斯德哥尔摩", en: "Stockholm", offset: 1 },
+                    { cn: "哥本哈根", en: "Copenhagen", offset: 1 },
+                    { cn: "阿姆斯特丹", en: "Amsterdam", offset: 1 },
+                    { cn: "布鲁塞尔", en: "Brussels", offset: 1 },
+                    { cn: "巴黎", en: "Paris", offset: 1 },
+                    { cn: "苏黎世", en: "Zurich", offset: 1 },
+                    { cn: "柏林", en: "Berlin", offset: 1 },
+                    { cn: "维也纳", en: "Vienna", offset: 1 },
+                    { cn: "布拉格", en: "Prague", offset: 1 },
+                    { cn: "华沙", en: "Warsaw", offset: 1 },
+                    { cn: "布达佩斯", en: "Budapest", offset: 1 },
+                    { cn: "萨格勒布", en: "Zagreb", offset: 1 },
+                    { cn: "马德里", en: "Madrid", offset: 1 },
+                    { cn: "罗马", en: "Rome", offset: 1 }
+                ]
+            },
+            {
+                name: "东欧 & 俄罗斯 Eastern Europe",
+                cities: [
+                    { cn: "赫尔辛基", en: "Helsinki", offset: 2 },
+                    { cn: "索非亚", en: "Sofia", offset: 2 },
+                    { cn: "雅典", en: "Athens", offset: 2 },
+                    { cn: "莫斯科", en: "Moscow", offset: 3 },
+                    { cn: "基辅", en: "Kyiv", offset: 2 },
+                    { cn: "伊斯坦布尔", en: "Istanbul", offset: 3 }
+                ]
+            },
+            {
+                name: "中东 Middle East",
+                cities: [
+                    { cn: "德黑兰", en: "Tehran", offset: 3.5 },
+                    { cn: "耶路撒冷", en: "Jerusalem", offset: 2 },
+                    { cn: "利雅得", en: "Riyadh", offset: 3 },
+                    { cn: "迪拜", en: "Dubai", offset: 4 }
+                ]
+            },
+            {
+                name: "非洲 Africa",
+                cities: [
+                    { cn: "卡萨布兰卡", en: "Casablanca", offset: 1 },
+                    { cn: "开罗", en: "Cairo", offset: 2 },
+                    { cn: "拉各斯", en: "Lagos", offset: 1 },
+                    { cn: "约翰内斯堡", en: "Joburg", offset: 2 }
+                ]
+            },
+            {
+                name: "亚洲 Asia",
+                cities: [
+                    { cn: "东京", en: "Tokyo", offset: 9 },
+                    { cn: "首尔", en: "Seoul", offset: 9 },
+                    { cn: "上海", en: "Shanghai", offset: 8 },
+                    { cn: "香港", en: "Hong Kong", offset: 8 },
+                    { cn: "卡拉奇", en: "Karachi", offset: 5 },
+                    { cn: "达卡", en: "Dhaka", offset: 6 },
+                    { cn: "加尔各答", en: "Kolkata", offset: 5.5 },
+                    { cn: "曼谷", en: "Bangkok", offset: 7 },
+                    { cn: "胡志明市", en: "Ho Chi Minh", offset: 7 },
+                    { cn: "马尼拉", en: "Manila", offset: 8 },
+                    { cn: "吉隆坡", en: "Kuala Lumpur", offset: 8 },
+                    { cn: "新加坡", en: "Singapore", offset: 8 },
+                    { cn: "雅加达", en: "Jakarta", offset: 7 }
+                ]
+            }
+        ];
+
+        // 页面跳转
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const icon = item.querySelector('svg');
+                const label = item.querySelector('span');
+                const targetId = label.innerText === '首页' ? 'home' : label.innerText === '计时器' ? 'timer' : label.innerText === '秒表' ? 'stopwatch' : 'alarm';
+                item.classList.toggle('active', targetId === id);
+            });
+            window.scrollTo(0,0);
+        }
+
+        // --- 时间同步逻辑 ---
+        function updateAllClocks() {
+            const now = new Date();
+            document.getElementById('main-clock').textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+            continentData.forEach((continent, cIdx) => {
+                continent.cities.forEach((city, idx) => {
+                    const el = document.getElementById(`time-${cIdx}-${idx}`);
+                    if (el) {
+                        const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                        const local = new Date(utc + (3600000 * city.offset));
+                        el.textContent = local.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    }
+                });
+            });
+        }
+
+        function renderAllSections() {
+            const container = document.getElementById('world-clock-sections');
+            container.innerHTML = continentData.map((continent, cIdx) => `
+                <div class="continent-header">
+                    <div class="w-1.5 h-3 bg-blue-600 rounded-full"></div>
+                    ${continent.name}
+                </div>
+                <div class="city-grid">
+                    ${continent.cities.map((city, idx) => `
+                        <div class="glass-card p-3 flex flex-col justify-between hover:border-blue-200 transition">
+                            <div>
+                                <div class="text-[11px] font-bold text-slate-800 truncate">${city.cn}</div>
+                                <div class="text-[9px] text-slate-400 uppercase truncate">${city.en}</div>
+                            </div>
+                            <div class="text-lg font-bold mono text-blue-600 mt-1" id="time-${cIdx}-${idx}">00:00</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        // --- 计时器逻辑 ---
+        let timerSeconds = 300;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        function quickSetTimer(min) {
+            if (isTimerRunning) toggleTimer();
+            document.getElementById('timer-min').value = min;
+            document.getElementById('timer-sec').value = 0;
+            syncTimerFromInput();
+        }
+
+        function syncTimerFromInput() {
+            const m = parseInt(document.getElementById('timer-min').value) || 0;
+            const s = parseInt(document.getElementById('timer-sec').value) || 0;
+            timerSeconds = (m * 60) + s;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const s = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${m}:${s}`;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('timer-control');
+            if (!isTimerRunning) {
+                syncTimerFromInput();
+                if (timerSeconds <= 0) return;
+                isTimerRunning = true;
+                btn.textContent = '暂停';
+                btn.classList.replace('bg-blue-600', 'bg-orange-500');
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        alert("计时结束！");
+                        resetTimer();
+                    }
+                }, 1000);
+            } else {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                btn.textContent = '继续计时';
+                btn.classList.replace('bg-orange-500', 'bg-blue-600');
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            document.getElementById('timer-control').textContent = '开始计时';
+            document.getElementById('timer-control').className = "bg-blue-600 text-white px-10 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-100";
+            syncTimerFromInput();
+        }
+
+        // --- 秒表逻辑 ---
+        let swTime = 0;
+        let swInterval = null;
+        let swRunning = false;
+
+        function toggleStopwatch() {
+            const btn = document.getElementById('sw-btn-main');
+            if (!swRunning) {
+                swRunning = true;
+                btn.textContent = '暂停';
+                btn.style.background = '#f97316';
+                swInterval = setInterval(() => {
+                    swTime += 10;
+                    const ms = Math.floor((swTime % 1000) / 10).toString().padStart(2, '0');
+                    const s = Math.floor((swTime / 1000) % 60).toString().padStart(2, '0');
+                    const m = Math.floor((swTime / 60000)).toString().padStart(2, '0');
+                    document.getElementById('sw-display').textContent = `${m}:${s}.${ms}`;
+                }, 10);
+            } else {
+                swRunning = false;
+                btn.textContent = '继续';
+                btn.style.background = '#2563eb';
+                clearInterval(swInterval);
+            }
+        }
+
+        function lapStopwatch() {
+            if (swTime === 0) return;
+            const laps = document.getElementById('sw-laps');
+            const div = document.createElement('div');
+            div.className = 'glass-card p-3 flex justify-between text-sm animate-fadeIn';
+            div.innerHTML = `<span class="text-slate-400 font-bold">第 ${laps.children.length + 1} 次</span><span class="mono font-bold text-blue-600">${document.getElementById('sw-display').textContent}</span>`;
+            laps.prepend(div);
+        }
+
+        function resetStopwatch() {
+            clearInterval(swInterval);
+            swRunning = false;
+            swTime = 0;
+            document.getElementById('sw-display').textContent = '00:00.00';
+            document.getElementById('sw-btn-main').textContent = '开始';
+            document.getElementById('sw-btn-main').style.background = '#2563eb';
+            document.getElementById('sw-laps').innerHTML = '';
+        }
+
+        // --- 闹钟逻辑 ---
+        function addAlarm() {
+            const time = prompt("请输入闹钟时间 (格式 08:30):", "08:00");
+            if (time) {
+                const list = document.getElementById('alarm-list');
+                if (list.querySelector('.italic')) list.innerHTML = '';
+                const div = document.createElement('div');
+                div.className = 'glass-card p-5 flex justify-between items-center group animate-fadeIn';
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl font-bold mono text-slate-800">${time}</div>
+                        <div class="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded">每天重复</div>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-rose-500 hover:bg-rose-50 p-2 rounded-lg opacity-0 group-hover:opacity-100 transition">删除</button>
+                `;
+                list.appendChild(div);
+            }
+        }
+
+        function updateCalendar() {
+            const now = new Date();
+            document.getElementById('cal-solar').textContent = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            // 静态模拟数据（实际可用相关库）
+            document.getElementById('cal-lunar').textContent = "农历冬月廿一";
+            document.getElementById('cal-zodiac').textContent = "乙巳蛇年";
+            document.getElementById('cal-yi').textContent = "祭祀 解除 沐浴";
+            document.getElementById('cal-ji').textContent = "嫁娶 安葬 出行";
+        }
+
+        // 初始化
+        updateCalendar();
+        renderAllSections();
+        setInterval(updateAllClocks, 1000);
+        updateAllClocks();
+        
+        // 绑定输入事件
+        document.getElementById('timer-min').addEventListener('input', syncTimerFromInput);
+        document.getElementById('timer-sec').addEventListener('input', syncTimerFromInput);
+    </script>
+</body>
+</html>
