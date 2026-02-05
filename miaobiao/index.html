@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>在线时钟工具</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">在线时钟工具</div>
+  <nav>
+    <a href="#clock">时钟</a>
+    <a href="#alarm">闹钟</a>
+    <a href="#timer">计时器</a>
+    <a href="#stopwatch">秒表</a>
+  </nav>
+</header>
+
+<main>
+
+<section id="clock" class="card center">
+  <div id="current-time" class="big-time">00:00:00</div>
+  <div id="current-date" class="sub-text"></div>
+</section>
+
+<section id="alarm" class="card">
+  <h2>闹钟</h2>
+  <div class="row">
+    <input type="time" id="alarm-time" />
+    <button id="set-alarm">添加闹钟</button>
+  </div>
+  <ul id="alarm-list" class="list"></ul>
+</section>
+
+<section id="timer" class="card">
+  <h2>计时器（倒计时）</h2>
+  <div class="row">
+    <input type="number" id="timer-min" placeholder="分钟" />
+    <input type="number" id="timer-sec" placeholder="秒" />
+  </div>
+  <div class="row">
+    <button id="start-timer">开始</button>
+    <button id="pause-timer">暂停</button>
+    <button id="reset-timer">重置</button>
+  </div>
+  <div id="timer-display" class="big-time">00:00</div>
+</section>
+
+<section id="stopwatch" class="card">
+  <h2>秒表</h2>
+  <div id="stopwatch-display" class="big-time">00:00.00</div>
+  <div class="row">
+    <button id="start-sw">开始</button>
+    <button id="lap-sw">计次</button>
+    <button id="reset-sw">重置</button>
+  </div>
+  <ul id="lap-list" class="list"></ul>
+</section>
+
+</main>
+
+<footer class="footer">
+© 2026 在线时钟工具
+</footer>
+
+<audio id="beep">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3">
+</audio>
+
+<script src="app.js"></script>
+</body>
+</html>
