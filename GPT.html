@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUXURY FLIGHT V5 - 步数修正版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-color: #030305;
+            --p0-color: #ff2a5f;
+            --p1-color: #00f0ff;
+            --p2-color: #00ff66;
+            --p3-color: #ffd700;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255, 42, 95, 0.1), transparent 35%),
+                radial-gradient(circle at 90% 90%, rgba(0, 240, 255, 0.1), transparent 35%);
+            color: white;
+            font-family: 'Noto Sans SC', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #start-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-color);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .setup-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 320px;
+            margin-bottom: 12px;
+        }
+
+        .setup-card input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .board-container {
+            width: 98vw;
+            height: 98vw;
+            max-width: 650px;
+            max-height: 650px;
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+            gap: 2px;
+            position: relative;
+            background: rgba(255,255,255,0.02);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .cell {
+            background: rgba(40, 40, 50, 0.4);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .territory-p0 { background: rgba(255, 42, 95, 0.15); border-color: rgba(255, 42, 95, 0.4); }
+        .territory-p1 { background: rgba(0, 240, 255, 0.15); border-color: rgba(0, 240, 255, 0.4); }
+        .territory-p2 { background: rgba(0, 255, 102, 0.15); border-color: rgba(0, 255, 102, 0.4); }
+        .territory-p3 { background: rgba(255, 215, 0, 0.15); border-color: rgba(255, 215, 0, 0.4); }
+
+        .center-crown {
+            grid-area: 8 / 8 / 9 / 9;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+            z-index: 50;
+        }
+
+        .player-hub {
+            border-radius: 24px;
+            background: rgba(20, 20, 30, 0.85);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .hub-0 { grid-area: 2 / 2 / 7 / 7; }
+        .hub-1 { grid-area: 2 / 10 / 7 / 15; }
+        .hub-2 { grid-area: 10 / 10 / 15 / 15; }
+        .hub-3 { grid-area: 10 / 2 / 15 / 7; }
+
+        .active-hub { transform: scale(1.05); z-index: 60; }
+        .active-hub.hub-0 { border-color: var(--p0-color); box-shadow: 0 0 20px var(--p0-color); }
+        .active-hub.hub-1 { border-color: var(--p1-color); box-shadow: 0 0 20px var(--p1-color); }
+        .active-hub.hub-2 { border-color: var(--p2-color); box-shadow: 0 0 20px var(--p2-color); }
+        .active-hub.hub-3 { border-color: var(--p3-color); box-shadow: 0 0 20px var(--p3-color); }
+
+        .dice-box { width: 45px; height: 45px; perspective: 1000px; margin-top: 8px; }
+        .dice { 
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
+            transition: transform 1.5s cubic-bezier(0.25, 0.1, 0.25, 1.0); 
+        }
+        .dice-face {
+            position: absolute; width: 45px; height: 45px; background: white;
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 900; color: #111; backface-visibility: hidden;
+        }
+        .face-1 { transform: rotateY(0deg) translateZ(22.5px); }
+        .face-2 { transform: rotateY(90deg) translateZ(22.5px); }
+        .face-3 { transform: rotateY(180deg) translateZ(22.5px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(22.5px); }
+        .face-5 { transform: rotateX(90deg) translateZ(22.5px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(22.5px); }
+
+        .piece {
+            width: 24px; height: 24px; font-size: 16px; display: flex; align-items: center;
+            justify-content: center; position: absolute; z-index: 100;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(0,0,0,0.6); border-radius: 50%; border: 2px solid white;
+            pointer-events: none;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+            display: none; 
+        }
+
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(12px);
+        }
+        .modal-card {
+            background: #111; border: 1px solid rgba(255,255,255,0.1); padding: 30px;
+            border-radius: 28px; width: 85%; max-width: 380px; text-align: center;
+        }
+        .btn-action {
+            background: linear-gradient(90deg, #ff2a5f, #aa00ff);
+            padding: 16px; border-radius: 14px; width: 100%; margin-top: 20px; font-weight: 900;
+            color: white;
+        }
+        .edit-input {
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 12px; width: 100%; border-radius: 12px; margin-top: 15px;
+            outline: none;
+        }
+        
+        .owner-tag { position: absolute; top: 2px; left: 2px; font-size: 8px; opacity: 0.5; pointer-events: none; }
+        .grid-num { position: absolute; bottom: 2px; left: 2px; font-size: 7px; opacity: 0.2; pointer-events: none; }
+        .task-icon { font-size: 12px; opacity: 0.6; pointer-events: none; }
+
+        .status-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .status-ready { background: #ff2a5f; color: white; }
+        .status-flying { background: #00ff66; color: black; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1 class="text-3xl font-black mb-10 text-center px-4">LUXURY FLIGHT V5<br><span class="text-sm text-pink-500 font-normal">修复步数逻辑：摇多少走多少</span></h1>
+        <div id="setup-container"></div>
+        <button class="btn-action w-64 mt-10" onclick="startGame()">确认人数并开启派对</button>
+    </div>
+
+    <div class="flex flex-col items-center justify-center h-screen px-2">
+        <div id="status-bar" class="mb-4 bg-white/5 px-6 py-2 rounded-full border border-white/10 text-xs font-bold uppercase tracking-widest">
+            当前玩家: <span id="current-player-name">等待开始...</span>
+        </div>
+
+        <div class="board-container" id="board">
+            <div class="center-crown">👑</div>
+            <div class="player-hub hub-0 active-hub" id="hub-0" onclick="handleRoll(0)"></div>
+            <div class="player-hub hub-1" id="hub-1" onclick="handleRoll(1)"></div>
+            <div class="player-hub hub-2" id="hub-2" onclick="handleRoll(2)"></div>
+            <div class="player-hub hub-3" id="hub-3" onclick="handleRoll(3)"></div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-card">
+            <div id="m-icon" class="text-6xl mb-4">🎲</div>
+            <div id="m-title" class="text-xs text-gray-500 font-black mb-2 uppercase tracking-tighter">TASK INFO</div>
+            <div id="m-text" class="text-xl font-bold mb-4">指令加载中...</div>
+            
+            <div id="special-area" class="hidden">
+                <div class="bg-pink-500/10 p-4 rounded-xl border border-pink-500/20">
+                    <p class="text-sm text-pink-400 mb-2 font-bold">✨ 规则改写权限</p>
+                    <input type="text" id="custom-task" class="edit-input" placeholder="输入新的惩罚指令...">
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="closeModal()">确认执行</button>
+        </div>
+    </div>
+
+    <script>
+        const GRID_TASKS = {
+            "0": { i:'🍷', t:'开始的热身：喝一口饮料' },
+            "1": { i:'👄', t:'亲吻伴侣脸颊' },
+            "2": { i:'👗', t:'脱掉一只袜子' },
+            "3": { i:'👂', t:'对伴侣说一句情话' },
+            "4": { i:'🖐️', t:'给伴侣按摩三分钟' },
+            "5": { i:'🔥', t:'深情对视10秒' },
+            "6": { i:'🥂', t:'全场一起干杯' },
+            "7": { i:'🔞', t:'真心话：说出你最喜欢的姿势' },
+            "8": { i:'💃', t:'起身跳一段性感的舞' },
+            "9": { i:'🐺', t:'发出一声狼叫' },
+            "10": { i:'💍', t:'模拟求婚动作' },
+            "11": { i:'👅', t:'用舌头在伴侣手背写字' }
+        };
+
+        const INNER_TASKS = {
+            "P0_1": { i:'💖', t:'专属奖励：亲吻三下' },
+            "P1_1": { i:'✨', t:'专属挑战：蒙眼转圈' }
+        };
+
+        const config = {
+            players: [
+                {id: 0, color: 'var(--p0-color)', av: '🦁', name: '狂野爵士'},
+                {id: 1, color: 'var(--p1-color)', av: '🦊', name: '魅惑妖姬'},
+                {id: 2, color: 'var(--p2-color)', av: '🐺', name: '腹黑少爷'},
+                {id: 3, color: 'var(--p3-color)', av: '🐱', name: '甜心恶魔'}
+            ],
+            defaultTasks: [
+                {i:'🍷', t: "自罚半杯"}, {i:'👄', t: "亲吻脖子"}, 
+                {i:'👂', t: "耳语三分钟"}, {i:'👗', t: "脱下一件衣物"}, 
+                {i:'🖐️', t: "揉揉肩膀"}, {i:'🔥', t: "告白10秒"}, 
+                {i:'🔞', t: "真心话大冒险"}, {i:'🐺', t: "摸头杀"}
+            ],
+            territoryDrinks: ["喝半杯！领地主人的威慑", "跳过本轮任务", "指定一人喝一口", "全场陪喝一口"],
+            takeoffPunishments: [
+                { weight: 30, i: '👗', t: '起飞失败！脱下一件身上衣物' },
+                { weight: 30, i: '🍷', t: '起飞失败！喝一口饮料' },
+                { weight: 30, i: '💋', t: '起飞失败！深情亲吻对方一口' },
+                { weight: 10, i: '🔞', t: '运气爆棚(倒扣)！脱光所有衣服' }
+            ]
+        };
+
+        let diceRotations = [{x:0, y:0, spins:0}, {x:0, y:0, spins:0}, {x:0, y:0, spins:0}, {x:0, y:0, spins:0}];
+        let currentTurn = 0, isMoving = false, activePlayers = [];
+        let territoryMap = new Map(); 
+
+        function getRandomPunishment() {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            for (const p of config.takeoffPunishments) {
+                cumulative += p.weight;
+                if (rand < cumulative) return p;
+            }
+            return config.takeoffPunishments[0];
+        }
+
+        const setupDiv = document.getElementById('setup-container');
+        config.players.forEach((p, i) => {
+            setupDiv.innerHTML += `
+                <div class="setup-card" style="border-left: 4px solid ${p.color}">
+                    <span class="text-2xl">${p.av}</span>
+                    <input type="text" id="name-${i}" value="${p.name}">
+                </div>
+            `;
+        });
+
+        function shuffleTerritories() {
+            const edgeIndices = Array.from({length: 56}, (_, i) => i);
+            for (let i = edgeIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [edgeIndices[i], edgeIndices[j]] = [edgeIndices[j], edgeIndices[i]];
+            }
+            for(let pIdx=0; pIdx<4; pIdx++) {
+                const slice = edgeIndices.slice(pIdx * 14, (pIdx + 1) * 14);
+                slice.forEach(idx => territoryMap.set(idx, pIdx));
+            }
+        }
+
+        function generatePaths() {
+            const edge = [];
+            for(let c=0; c<15; c++) edge.push({r:0, c:c}); 
+            for(let r=1; r<15; r++) edge.push({r:r, c:14}); 
+            for(let c=13; c>=0; c--) edge.push({r:14, c:c}); 
+            for(let r=13; r>=1; r--) edge.push({r:r, c:0}); 
+
+            return config.players.map((p, i) => {
+                const startIndex = i * 14; 
+                let p_path = [];
+                for(let j=0; j<56; j++) p_path.push({ ...edge[(startIndex + j) % 56], id: (startIndex + j) % 56 });
+                
+                const center = 7;
+                for(let k=1; k<=7; k++) {
+                    let r, c;
+                    if(i === 0) { r=k; c=center; }
+                    else if(i === 1) { r=center; c=14-k; }
+                    else if(i === 2) { r=14-k; c=center; }
+                    else { r=center; c=k; }
+                    p_path.push({ r, c, id: `P${i}_${k}` });
+                }
+                return p_path;
+            });
+        }
+
+        const allPaths = generatePaths();
+
+        function startGame() {
+            shuffleTerritories();
+            activePlayers = config.players.map((p, i) => ({
+                ...p, 
+                name: document.getElementById('name-'+i).value, 
+                pos: 0, 
+                finished: false,
+                isFlying: false 
+            }));
+
+            activePlayers.forEach((p, i) => updateHubUI(i));
+            document.getElementById('start-screen').style.display = 'none';
+            initBoard();
+            updateStatusBar();
+        }
+
+        function updateHubUI(id) {
+            const p = activePlayers[id];
+            const hub = document.getElementById('hub-'+id);
+            hub.innerHTML = `
+                <div class="text-3xl">${p.av}</div>
+                <div class="text-[10px] mt-1 font-bold" style="color:${p.color}">${p.name}</div>
+                <div class="status-badge ${p.isFlying ? 'status-flying' : 'status-ready'}">${p.isFlying ? '🚀 飞行中' : '🏠 待起飞'}</div>
+                <div class="dice-box">
+                    <div class="dice" id="dice-${id}">
+                        <div class="dice-face face-1">1</div><div class="dice-face face-2">2</div>
+                        <div class="dice-face face-3">3</div><div class="dice-face face-4">4</div>
+                        <div class="dice-face face-5">5</div><div class="dice-face face-6">6</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initBoard() {
+            const board = document.getElementById('board');
+            const cellMap = new Map();
+
+            allPaths.forEach(path => {
+                path.forEach(node => {
+                    const key = `${node.r},${node.c}`;
+                    if (!cellMap.has(key)) cellMap.set(key, node.id);
+                });
+            });
+
+            cellMap.forEach((gridId, coords) => {
+                const [r, c] = coords.split(',').map(Number);
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.id = `cell-${r}-${c}`;
+                cell.style.gridRow = r + 1;
+                cell.style.gridColumn = c + 1;
+
+                const edge = [];
+                for(let col=0; col<15; col++) edge.push({r:0, c:col}); 
+                for(let row=1; row<15; row++) edge.push({r:row, c:14}); 
+                for(let col=13; col>=0; col--) edge.push({r:14, c:col}); 
+                for(let row=13; row>=1; row--) edge.push({r:row, c:0}); 
+                const edgeIdx = edge.findIndex(e => e.r === r && e.c === c);
+                
+                if(edgeIdx !== -1) {
+                    const owner = territoryMap.get(edgeIdx);
+                    cell.classList.add(`territory-p${owner}`);
+                    const ot = document.createElement('span');
+                    ot.className = 'owner-tag';
+                    ot.innerText = config.players[owner].av;
+                    cell.appendChild(ot);
+                }
+
+                let task = GRID_TASKS[gridId] || INNER_TASKS[gridId];
+                if (!task) {
+                    task = config.defaultTasks[Math.floor(Math.random()*config.defaultTasks.length)];
+                }
+                cell.dataset.txt = task.t;
+                cell.dataset.icon = task.i;
+
+                const icon = document.createElement('span');
+                icon.className = 'task-icon';
+                icon.innerText = task.i;
+                cell.appendChild(icon);
+
+                const num = document.createElement('span');
+                num.className = 'grid-num';
+                num.innerText = gridId;
+                cell.appendChild(num);
+
+                allPaths.forEach((path, pid) => {
+                    path.slice(56).forEach(inner => {
+                        if(inner.r === r && inner.c === c) {
+                            cell.style.borderColor = config.players[pid].color;
+                            cell.style.background = `rgba(255,255,255,0.05)`;
+                        }
+                    });
+                });
+
+                board.appendChild(cell);
+            });
+
+            activePlayers.forEach(p => {
+                const pc = document.createElement('div');
+                pc.className = 'piece';
+                pc.id = 'pce-'+p.id;
+                pc.style.borderColor = p.color;
+                pc.innerText = p.av;
+                const start = allPaths[p.id][0];
+                const startCell = document.getElementById(`cell-${start.r}-${start.c}`);
+                if (startCell) startCell.appendChild(pc);
+            });
+        }
+
+        function handleRoll(id) {
+            if(isMoving || id !== currentTurn || activePlayers[id].finished) return;
+            isMoving = true;
+            
+            const val = Math.floor(Math.random() * 6) + 1;
+            const dice = document.getElementById('dice-'+id);
+            const rotations = [{x:0, y:0}, {x:0, y:-90}, {x:0, y:-180}, {x:0, y:90}, {x:-90, y:0}, {x:90, y:0}];
+            const target = rotations[val-1];
+            
+            // 每次摇骰子固定增加 4 圈 (4 * 360 = 1440度)
+            if (!diceRotations[id].spins) diceRotations[id].spins = 0;
+            diceRotations[id].spins += 4; 
+            
+            // 基础圈数度数
+            const baseDegree = diceRotations[id].spins * 360;
+            
+            // 最终角度 = 基础圈数度数 + 目标面的绝对角度
+            dice.style.transform = `rotateX(${baseDegree + target.x}deg) rotateY(${baseDegree + target.y}deg)`;
+
+            setTimeout(() => {
+                const p = activePlayers[id];
+                
+                if (!p.isFlying) {
+                    if (val === 6) {
+                        p.isFlying = true;
+                        p.pos = 0; // 站在起点
+                        updateHubUI(id);
+                        const piece = document.getElementById('pce-'+id);
+                        piece.style.display = 'flex'; 
+                        showModal("🚀", "成功起飞", `摇到 6 成功起飞！停留在起始格：${GRID_TASKS[0].t}`);
+                        isMoving = false;
+                    } else {
+                        const punish = getRandomPunishment();
+                        showModal(punish.i, "起飞失败", `摇到了 ${val}，起飞失败！惩罚：${punish.t}`);
+                        isMoving = false;
+                    }
+                    return;
+                }
+
+                // 正常移动逻辑 - 修复移动次数不符问题
+                let stepsDone = 0;
+                const piece = document.getElementById('pce-'+id);
+                const moveTimer = setInterval(() => {
+                    p.pos++;
+                    const path = allPaths[id];
+                    
+                    // 检查是否超过终点
+                    if(p.pos >= path.length) {
+                        p.pos = path.length - 1;
+                    }
+
+                    const node = path[p.pos];
+                    const targetCell = document.getElementById(`cell-${node.r}-${node.c}`);
+                    
+                    // 如果进入中心皇冠
+                    if(p.pos === path.length - 1) {
+                        const crown = document.querySelector('.center-crown');
+                        if (crown && piece) crown.appendChild(piece);
+                        clearInterval(moveTimer);
+                        isMoving = false;
+                        checkLanding(id);
+                        return;
+                    }
+
+                    // 常规移动
+                    if (targetCell && piece) targetCell.appendChild(piece);
+                    
+                    stepsDone++;
+                    if(stepsDone >= val) {
+                        clearInterval(moveTimer);
+                        isMoving = false;
+                        checkLanding(id);
+                    }
+                }, 350);
+            }, 1600);
+        }
+
+        function checkLanding(id) {
+            const p = activePlayers[id];
+            const node = allPaths[id][p.pos];
+            const cell = document.getElementById(`cell-${node.r}-${node.c}`);
+            document.getElementById('special-area').classList.add('hidden');
+            
+            if(p.pos === allPaths[id].length - 1) {
+                p.finished = true;
+                showModal("👑", "大获全胜", `${p.name} 登顶！下令让所有人完成一个挑战！`);
+                return;
+            }
+
+            if(cell) {
+                const ownerClass = Array.from(cell.classList).find(cls => cls.startsWith('territory-p'));
+                if(ownerClass) {
+                    const ownerId = parseInt(ownerClass.split('-p')[1]);
+                    if(ownerId === id) {
+                        const drink = config.territoryDrinks[Math.floor(Math.random()*config.territoryDrinks.length)];
+                        document.getElementById('special-area').classList.remove('hidden');
+                        showModal(p.av, "领地主场", `欢迎回来！[${drink}]\n您还可以修改此格规则：`);
+                    } else {
+                        showModal(cell.dataset.icon, "入侵他人领地", `踩到了 ${config.players[ownerId].name} 的地盘！任务：${cell.dataset.txt}`);
+                    }
+                } else {
+                    showModal(cell.dataset.icon, "随机任务", cell.dataset.txt);
+                }
+            }
+        }
+
+        function showModal(icon, title, text) {
+            document.getElementById('m-icon').innerText = icon;
+            document.getElementById('m-title').innerText = title;
+            document.getElementById('m-text').innerText = text;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            const input = document.getElementById('custom-task');
+            if(input.value.trim() !== "") {
+                const p = activePlayers[currentTurn];
+                const node = allPaths[currentTurn][p.pos];
+                const cell = document.getElementById(`cell-${node.r}-${node.c}`);
+                if (cell) {
+                    cell.dataset.txt = input.value;
+                    const iconEl = cell.querySelector('.task-icon');
+                    if(iconEl) {
+                        iconEl.innerText = "📝";
+                        iconEl.style.color = "#fb7185";
+                    }
+                }
+                input.value = "";
+            }
+            document.getElementById('modal').style.display = 'none';
+            nextTurn();
+        }
+
+        function nextTurn() {
+            currentTurn = (currentTurn + 1) % 4;
+            while(activePlayers[currentTurn].finished) {
+                currentTurn = (currentTurn + 1) % 4;
+                if (activePlayers.every(ap => ap.finished)) return;
+            }
+            updateStatusBar();
+            config.players.forEach(p => {
+                const hub = document.getElementById('hub-'+p.id);
+                if (hub) p.id === currentTurn ? hub.classList.add('active-hub') : hub.classList.remove('active-hub');
+            });
+        }
+
+        function updateStatusBar() {
+            const el = document.getElementById('current-player-name');
+            if (el) {
+                el.innerText = activePlayers[currentTurn].name;
+                el.style.color = activePlayers[currentTurn].color;
+            }
+        }
+    </script>
+</body>
+</html>
